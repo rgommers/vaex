@@ -1547,7 +1547,7 @@ class DataFrame(object):
             limits_minmax = self.minmax(expr, selection=selection, delay=delay)
             limits1 = compute(limits_minmax=limits_minmax)
             limits.append(limits1)
-        return delayed(vaex.utils.unlistify)(waslist, limits)
+        return self._delay(delay, delayed(vaex.utils.unlistify)(waslist, limits))
 
     @docsubst
     def limits(self, expression, value=None, square=False, selection=None, delay=False, shape=None):
@@ -4992,10 +4992,10 @@ class ColumnProxy(collections.abc.MutableMapping):
 class DataFrameLocal(DataFrame):
     """Base class for DataFrames that work with local file/data"""
 
-    def __init__(self, dataset=None):
+    def __init__(self, dataset=None, name="no-name"):
         if dataset is None:
             dataset = vaex.dataset.DatasetArrays()
-        super(DataFrameLocal, self).__init__(dataset.keys())
+        super(DataFrameLocal, self).__init__(name)
         self._dataset = dataset
         if hasattr(dataset, 'units'):
             self.units.update(dataset.units)
