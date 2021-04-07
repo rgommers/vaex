@@ -132,7 +132,9 @@ class GroupByBase(object):
             by = [by]
 
         self.by = []
+        self.by_names = []
         for by_value in by:
+            self.by_names.append(str(by_value))
             if not isinstance(by_value, BinnerBase):
                 if df.is_category(by_value):
                     by_value = GrouperCategory(df[str(by_value)])
@@ -293,7 +295,7 @@ class GroupBy(GroupByBase):
         counts = vaex.utils.extract_central_part(counts)
         mask = counts > 0
         coords = [coord[mask] for coord in np.meshgrid(*self.coords1d, indexing='ij')]
-        labels = {str(by.expression): coord for by, coord in zip(self.by, coords)}
+        labels = {by: coord for by, coord in zip(self.by_names, coords)}
         df_grouped = vaex.from_dict(labels)
         for key, value in arrays.items():
             df_grouped[key] = value[mask]
